@@ -1,0 +1,12 @@
+<Defs>
+	<WorkGiverDef>
+		<defName>InstallWeapon</defName>
+		<label>Install guns</label>
+		<giverClass>TurretBases.WorkGiver_InstallWeapon</giverClass>
+		<workType>BasicWorker</workType>
+		<verb>Install weapon</verb>
+		<gerund>intalling weapon</gerund>
+		<canBeDoneWhileDrafted>true</canBeDoneWhileDrafted>
+		<priorityInType>500</priorityInType>
+	  </WorkGiverDef>
+</Defs>

@@ -1,0 +1,8 @@
+<Defs>
+	<JobDef>
+		<defName>InstallWeapon</defName>
+		<driverClass>TurretBases.JobDriver_InstallWeapon</driverClass>
+		<reportString>Install gun.</reportString>
+		<allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+	  </JobDef>
+</Defs>
