@@ -4,10 +4,10 @@
 		<langVersion>10.0</langVersion>
 		<Nullable>enable</Nullable>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<Configurations>Debug;Hotswap;1.5</Configurations>
+		<Configurations>Debug;Hotswap;1.6</Configurations>
 	</PropertyGroup>
 	<PropertyGroup>
-		<OutputPath>..\..\1.5\Assemblies\</OutputPath>
+		<OutputPath>..\..\1.6\Assemblies\</OutputPath>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='1.5|AnyCPU'">
 	  <Optimize>True</Optimize>
@@ -20,13 +20,10 @@
 	  <DebugType>None</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.*">
+		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4498-beta">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="Lib.Harmony" Version="2.3.3">
-			<ExcludeAssets>runtime</ExcludeAssets>
-		</PackageReference>
-		<PackageReference Include="Zetrith.Prepatcher" Version="1.2.0">
+		<PackageReference Include="Lib.Harmony" Version="2.3.6">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
 	</ItemGroup>

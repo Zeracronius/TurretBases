@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using RimWorld;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,8 +32,11 @@ namespace TurretBases.Interfaces
 			inRect.SplitHorizontally(inRect.height - 70, out Rect top, out Rect bottom);
 			_table?.Draw(top);
 
-			if (Widgets.ButtonText(bottom, "Close"))
+			if (Widgets.ButtonText(bottom, "Select"))
+			{
 				SelectedGun = _table?.SelectedRows.FirstOrDefault()?.Tag as Thing;
+				this.Close();
+			}
 		}
 
 		private void DoWeaponTile(Rect inRect)
@@ -46,17 +50,18 @@ namespace TurretBases.Interfaces
 
 
 			_table = new Table<TableRow<Thing>>((row, value) => row.SearchString.Contains(value));
-			_table.MultiSelect = true;
+			_table.MultiSelect = false;
 			_table.DrawBorder = true;
 
-			TableColumn<TableRow<Thing>> colDef = _table.AddColumn("", 30f);
+			TableColumn<TableRow<Thing>> colDef = _table.AddColumn("", 30f, DrawIcon);
 			colDef.IsFixedWidth = true;
-			TableColumn<TableRow<Thing>> colLabel = _table.AddColumn("Weapon", 1f);
+
+			TableColumn<TableRow<Thing>> colLabel = _table.AddColumn("Caption", 1f);
 			colLabel.IsFixedWidth = false;
 
 			foreach (var item in _map.listerThings.AllThings)
 			{
-				if (item.def.IsRangedWeapon && item.Spawned)
+				if (item.def.IsRangedWeapon && item.Spawned && (item as ThingWithComps)?.GetComp<CompForbiddable>()?.Forbidden != true)
 				{
 					var row = new TableRow<Thing>(item, item.Label.ToLower());
 					row[colLabel] = item.LabelCap;
@@ -65,6 +70,7 @@ namespace TurretBases.Interfaces
 					_table.AddRow(row);
 				}
 			}
+			_table.Refresh();
 		}
 
 		private void DrawIcon(ref Rect boundingBox, TableRow<Thing> item)

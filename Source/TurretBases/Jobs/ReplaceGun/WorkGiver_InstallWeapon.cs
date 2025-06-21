@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Verse.AI;
 using Verse;
 using TurretBases.DefOf;
+using TurretBases.Building;
 
 namespace TurretBases
 {
@@ -42,7 +43,8 @@ namespace TurretBases
 
 			if (t is Building_TurretBase turretBase)
 			{
-				if (pawn.CanReserve(turretBase.GunToInstall, 1, 1, null, forced) == false)
+				if (pawn.CanReserve(turretBase.GunToInstall, 1, 1, null, forced) == false ||
+					turretBase.GunToInstall.IsForbidden(pawn))
 				{
 					// Gun is no longer available. Cancel job.
 					turretBase.Map.designationManager.DesignationOn(turretBase, TB_DesignationDefOf.InstallWeapon)?.Delete();
@@ -61,7 +63,9 @@ namespace TurretBases
 
 		public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
 		{
-			return JobMaker.MakeJob(TB_JobDefOf.InstallWeapon, t, ((Building_TurretBase)t).GunToInstall);
+			Job job = JobMaker.MakeJob(TB_JobDefOf.InstallWeapon, t, ((Building_TurretBase)t).GunToInstall);
+			job.count = 1;
+			return job;
 		}
 	}
 }

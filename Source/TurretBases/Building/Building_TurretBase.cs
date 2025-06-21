@@ -10,14 +10,12 @@ using UnityEngine;
 using Verse;
 using static UnityEngine.GraphicsBuffer;
 
-namespace TurretBases
+namespace TurretBases.Building
 {
-    public class Building_TurretBase : Building_TurretGun
+    public class Building_TurretBase : Verse.Building
     {
 		public Thing? GunToInstall;
-
 		private Gizmo _selectWeapon;
-		private Gizmo _removeWeapon;
 
 		public Building_TurretBase()
 			: base()
@@ -28,22 +26,26 @@ namespace TurretBases
 				defaultLabel = "Select gun"
 			};
 
-			_removeWeapon = new Command_Action()
-			{
-				action = RemoveGun,
-				defaultLabel = "Uninstall gun"
-			};
+		}
+
+		public void InstallGun(Thing gun)
+		{
+			base.Map.designationManager.DesignationOn(this, TB_DesignationDefOf.InstallWeapon)?.Delete();
+
+			IntVec3 position = Position;
+			Map map = Map;
+			this.DeSpawn();
+
+			Building_MountedTurret mountedTurret = (Building_MountedTurret)ThingMaker.MakeThing(TB_ThingDefOf.Turret_MountedTurret);
+			mountedTurret.SetGun(gun);
+			mountedTurret.SetFactionDirect(factionInt);
+			GenPlace.TryPlaceThing(mountedTurret, position, map, ThingPlaceMode.Direct);
 		}
 
 		private void OpenGunSelection()
 		{
 			Dialog_SelectGun dialog = new Dialog_SelectGun(Map, GunSelected);
 			Find.WindowStack.Add(dialog);
-		}
-
-		private void RemoveGun()
-		{
-
 		}
 
 		private void GunSelected(Thing? selectedGun)
@@ -55,30 +57,9 @@ namespace TurretBases
 			}
 		}
 
-		protected override void DrawAt(Vector3 drawLoc, bool flip = false)
-		{
-			if (def.drawerType == DrawerType.RealtimeOnly || !Spawned)
-				Graphic.Draw(drawLoc, flip ? Rotation.Opposite : Rotation, this);
-
-			if (gun != null)
-				PawnRenderUtility.DrawEquipmentAiming(gun, drawLoc, top.CurRotation);
-
-			SilhouetteUtility.DrawGraphicSilhouette(this, drawLoc);
-			Comps_PostDraw();
-		}
-
-		public override string GetInspectString()
-		{
-			if (gun != null)
-				return base.GetInspectString();
-			else
-				return "No gun installed";
-		}
-
 		public override void ExposeData()
 		{
 			base.ExposeData();
-
 			Scribe_References.Look(ref GunToInstall, "GunToInstall");
 		}
 
@@ -89,9 +70,6 @@ namespace TurretBases
 				yield return gizmo;
 			}
 			yield return _selectWeapon;
-
-			if (this.gun != null)
-				yield return _removeWeapon;
 		}
 	}
 }
