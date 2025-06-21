@@ -17,14 +17,21 @@ namespace TurretBases
 		public Thing? GunToInstall;
 
 		private Gizmo _selectWeapon;
+		private Gizmo _removeWeapon;
 
-        public Building_TurretBase()
+		public Building_TurretBase()
 			: base()
         {
 			_selectWeapon = new Command_Action()
 			{
 				action = OpenGunSelection,
 				defaultLabel = "Select gun"
+			};
+
+			_removeWeapon = new Command_Action()
+			{
+				action = RemoveGun,
+				defaultLabel = "Uninstall gun"
 			};
 		}
 
@@ -33,6 +40,12 @@ namespace TurretBases
 			Dialog_SelectGun dialog = new Dialog_SelectGun(Map, GunSelected);
 			Find.WindowStack.Add(dialog);
 		}
+
+		private void RemoveGun()
+		{
+
+		}
+
 		private void GunSelected(Thing? selectedGun)
 		{
 			if (selectedGun != null)
@@ -76,6 +89,9 @@ namespace TurretBases
 				yield return gizmo;
 			}
 			yield return _selectWeapon;
+
+			if (this.gun != null)
+				yield return _removeWeapon;
 		}
 	}
 }
