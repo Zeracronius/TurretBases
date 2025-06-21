@@ -34,12 +34,20 @@ namespace TurretBases.Building
 			{
 				Verb verb = allVerbs[i];
 				verb.caster = this;
-				verb.castCompleteCallback = BurstComplete;
+				verb.castCompleteCallback = OnBurstCompleted;
 			}
 			if (gun.Spawned)
 				gun.DeSpawn();
 			gun.ForceSetStateToUnspawned();
 		}
+
+		private void OnBurstCompleted()
+		{
+			base.BurstComplete();
+			if (gun.Destroyed)
+				RemoveGun();
+		}
+		
 
 		private void RemoveGun()
 		{
@@ -56,8 +64,12 @@ namespace TurretBases.Building
 		public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
 		{
 			// Drop mounted gun.
-			gun.stackCount = 1;
-			GenSpawn.Spawn(gun, Position, Map);
+			if (gun.Destroyed == false)
+			{
+				gun.stackCount = 1;
+				GenSpawn.Spawn(gun, Position, Map);
+			}
+
 			base.DeSpawn(mode);
 		}
 
