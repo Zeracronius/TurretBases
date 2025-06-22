@@ -13,8 +13,8 @@ namespace TurretBases.Mod
 		public TurretBasesMod(ModContentPack content) 
 			: base(content)
 		{
-			Harmony harmony = new Harmony("zeracronius.turretbases");
-			harmony.PatchAll();
+			//Harmony harmony = new Harmony("zeracronius.turretbases");
+			//harmony.PatchAll();
 		}
 	}
 }
