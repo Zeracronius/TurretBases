@@ -12,12 +12,14 @@ using Verse;
 
 namespace TurretBases.Building
 {
-    public class Building_MountedTurret : Building_TurretGun, ICanInstallGun
-    {
+	public class Building_MountedTurret : Building_TurretGun, ICanInstallGun
+	{
 		private Gizmo _removeWeapon;
 		private Gizmo _selectWeapon;
 		private TurretBaseDef _turretBaseDef;
+		private Graphic? _turretGraphics;
 		private Thing? _gunToInstall;
+		private Verb_LaunchProjectile? _recoiledProjectile;
 
 		public Thing? GunToInstall
 		{
@@ -28,11 +30,11 @@ namespace TurretBases.Building
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 		public Building_MountedTurret()
 			: base()
-        {
+		{
 		}
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-		public override string Label => string.Format(base.Label, gun.LabelNoParenthesisCap);
+		public override string Label => $"{base.Label}: {gun.LabelNoParenthesisCap}";
 		public override void PostMake()
 		{
 			base.PostMake();
@@ -70,6 +72,7 @@ namespace TurretBases.Building
 		{
 			base.gun = gun;
 			List<Verb> allVerbs = gun.TryGetComp<CompEquippable>().AllVerbs;
+			_recoiledProjectile = EquipmentUtility.GetRecoilVerb(allVerbs);
 			for (int i = 0; i < allVerbs.Count; i++)
 			{
 				Verb verb = allVerbs[i];
@@ -79,6 +82,9 @@ namespace TurretBases.Building
 			if (gun.Spawned)
 				gun.DeSpawn();
 			gun.ForceSetStateToUnspawned();
+
+			var modExtension = gun.def.GetModExtension<ModExtensions.TurretBaseExtension>();
+			_turretGraphics = modExtension?.turretGraphicData?.Graphic;
 		}
 
 		private void OnBurstCompleted()
@@ -123,8 +129,13 @@ namespace TurretBases.Building
 		protected override void DrawAt(Vector3 drawLoc, bool flip = false)
 		{
 			// Draw attached gun if any, and make sure to draw it above the turret.
-			if (gun != null)
-				PawnRenderUtility.DrawEquipmentAiming(gun, drawLoc + Altitudes.AltIncVect, top.CurRotation);
+			float aimRotation = top.CurRotation - 90f;
+			if (_turretGraphics != null)
+			{
+				_turretGraphics.Draw(drawLoc + Altitudes.AltIncVect, Rotation, gun, aimRotation);
+			}
+			else
+				DrawEquipment(gun, drawLoc + Altitudes.AltIncVect, aimRotation);
 
 			// Draw turret frame and shadows.
 			if (def.drawerType == DrawerType.RealtimeOnly || !Spawned)
@@ -132,6 +143,20 @@ namespace TurretBases.Building
 			SilhouetteUtility.DrawGraphicSilhouette(this, drawLoc);
 
 			Comps_PostDraw();
+		}
+
+		private void DrawEquipment(Thing eq, Vector3 drawLoc, float aimAngle)
+		{
+			aimAngle += eq.def.equippedAngleOffset;
+			aimAngle %= 360f;
+
+			EquipmentUtility.Recoil(eq.def, _recoiledProjectile, out Vector3 drawOffset, out float angleOffset, aimAngle);
+			drawLoc += drawOffset;
+			aimAngle += angleOffset;
+
+			Material material = ((!(eq.Graphic is Graphic_StackCount graphic_StackCount)) ? eq.Graphic.MatSingleFor(eq) : graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingleFor(eq));
+			Matrix4x4 matrix = Matrix4x4.TRS(s: new Vector3(eq.Graphic.drawSize.x, 0f, eq.Graphic.drawSize.y), pos: drawLoc, q: Quaternion.AngleAxis(aimAngle, Vector3.up));
+			Graphics.DrawMesh(MeshPool.plane10, matrix, material, 0);
 		}
 
 		public override IEnumerable<Gizmo> GetGizmos()

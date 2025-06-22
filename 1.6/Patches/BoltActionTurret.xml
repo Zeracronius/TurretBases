@@ -1,0 +1,14 @@
+<Patch>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>Defs/ThingDef[defName="Gun_BoltActionRifle"]</xpath>
+		<value>
+			<li Class="TurretBases.ModExtensions.TurretBaseExtension">
+				<turretGraphicData>
+					<texPath>Things/Building/Mech/TurretMechMini_Top</texPath>
+					<graphicClass>Graphic_Single</graphicClass>
+					<drawSize>(2,2)</drawSize>
+				</turretGraphicData>
+			</li>
+		</value>
+	</Operation>
+</Patch>

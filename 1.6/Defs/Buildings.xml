@@ -1,14 +1,43 @@
 <Defs>
-	<TurretBases.Defs.TurretBaseDef ParentName="BuildingBase" Name="Turret_base">
-		<defName>Turret_Base</defName>
-		<label>Turret base</label>
-		<tickerType>Never</tickerType>
-		<description>A portable automatic turret. Requires steel to refurbish its barrel after heavy
-			use. May explode when damaged. Its dumb AI brain can't be directly controlled, so beware
-			of friendly fire.</description>
+	
+	<ThingDef Abstract="true" ParentName="BuildingBase" Name="TurretBase">
+		<defName>TurretBase</defName>
+		<label>turret base</label>
 		<thingClass>TurretBases.Building.Building_TurretBase</thingClass>
+		<tickerType>Never</tickerType>
 		<drawerType>MapMeshAndRealTime</drawerType>
-		<relatedTurretDef>Turret_MountedTurret</relatedTurretDef>
+		<minifiedDef>MinifiedThing</minifiedDef>
+		<altitudeLayer>Building</altitudeLayer>
+		<stealable>false</stealable>
+		<rotatable>false</rotatable>
+		<passability>PassThroughOnly</passability>
+		<hasTooltip>true</hasTooltip>
+		<designationHotKey>Misc2</designationHotKey>
+		<designationCategory>Security</designationCategory>
+		<thingCategories>
+			<li>BuildingsSecurity</li>
+		</thingCategories>
+		<building>
+			<turretBurstCooldownTime>-1</turretBurstCooldownTime> <!-- 4.8 seconds -->
+      		<turretGunDef>Gun_MiniTurret</turretGunDef>
+		</building>
+		<comps>
+			<li Class="CompProperties_Forbiddable" />
+			<li Class="CompProperties_Breakdownable" />
+			<li Class="CompProperties_Stunnable">
+				<affectedDamageDefs>
+					<li>Stun</li>
+					<li>EMP</li>
+				</affectedDamageDefs>
+			</li>
+		</comps>
+	</ThingDef>
+	
+	<TurretBases.Defs.TurretBaseDef ParentName="TurretBase" Name="LightTurret_base">
+		<defName>Light_TurretBase</defName>
+		<label>Light turret base</label>
+		<description>Small light turret frame suitable for mounting a variety of smaller weapons.</description>
+		<relatedTurretDef>Light_MountedTurret</relatedTurretDef>
 		<graphicData>
 			<texPath>Things/Building/Security/TurretMini_Base</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
@@ -21,15 +50,8 @@
 				<offset>(0,0,0)</offset>
 			</shadowData>
 		</graphicData>
-		<uiIconPath>Things/Building/Security/TurretMini_MenuIcon</uiIconPath>
-		<uiIconScale>0.90</uiIconScale>
-		<minifiedDef>MinifiedThing</minifiedDef>
-		<altitudeLayer>Building</altitudeLayer>
-		<stealable>false</stealable>
-		<rotatable>false</rotatable>
-		<thingCategories>
-			<li>BuildingsSecurity</li>
-		</thingCategories>
+		<uiIconPath>Things/Building/Security/TurretMini_Base</uiIconPath>
+		<uiIconScale>2</uiIconScale>
 		<statBases>
 			<MaxHitPoints>100</MaxHitPoints>
 			<Flammability>0.7</Flammability>
@@ -38,51 +60,107 @@
 			<Beauty>-20</Beauty>
 			<ShootingAccuracyTurret>0.96</ShootingAccuracyTurret>
 		</statBases>
-		<comps>
-			<li Class="CompProperties_Forbiddable" />
-			<li Class="CompProperties_Breakdownable" />
-			<li Class="CompProperties_Stunnable">
-				<affectedDamageDefs>
-					<li>Stun</li>
-					<li>EMP</li>
-				</affectedDamageDefs>
-			</li>
-		</comps>
-		<passability>PassThroughOnly</passability>
 		<pathCost>50</pathCost>
 		<fillPercent>0.4</fillPercent>
-		<hasTooltip>true</hasTooltip>
 		<costList>
 			<Steel>70</Steel>
 			<ComponentIndustrial>3</ComponentIndustrial>
 		</costList>
 		<terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
-		<designationCategory>Security</designationCategory>
 		<constructionSkillPrerequisite>5</constructionSkillPrerequisite>
-		<designationHotKey>Misc2</designationHotKey>
 		<researchPrerequisites>
 			<li>GunTurrets</li>
 		</researchPrerequisites>
 	</TurretBases.Defs.TurretBaseDef>
 
-	<TurretBases.Defs.TurretBaseDef ParentName="Turret_base">
-		<defName>Turret_MountedTurret</defName>
-		<label>{0} turret</label>
-		<ignoreIllegalLabelCharacterConfigError>true</ignoreIllegalLabelCharacterConfigError>
+	<TurretBases.Defs.TurretBaseDef ParentName="LightTurret_base">
+		<defName>Light_MountedTurret</defName>
+		<label>Light mounted turret</label>
 		<tickerType>Normal</tickerType>
-		<altitudeLayer>BuildingBelowTop</altitudeLayer>
 		<thingClass>TurretBases.Building.Building_MountedTurret</thingClass>
 		<thingCategories Inherit="false" />
 		<designationCategory Inherit="false" />
 		<minifiedDef />
-		<relatedTurretDef>Turret_Base</relatedTurretDef>
+		<relatedTurretDef>Light_TurretBase</relatedTurretDef>
 		<building>
 			<combatPower>45</combatPower>   <!-- same as a scavenger -->
 			<ai_combatDangerous>true</ai_combatDangerous>
-			<turretBurstCooldownTime>4.8</turretBurstCooldownTime>
-      		<turretGunDef>Gun_MiniTurret</turretGunDef>
 			<relatedBuildCommands>
-				<li>Turret_Base</li>
+				<li>Light_TurretBase</li>
+			</relatedBuildCommands>
+		</building>
+		<comps>
+			<li Class="CompProperties_Explosive">
+				<wickTicks>240</wickTicks>
+				<explosiveRadius>3.9</explosiveRadius>
+				<explosiveDamageType>Bomb</explosiveDamageType>
+				<chanceNeverExplodeFromDamage>0.5</chanceNeverExplodeFromDamage>
+			</li>
+			<li Class="CompProperties_Power">
+				<compClass>CompPowerTrader</compClass>
+				<basePowerConsumption>80</basePowerConsumption>
+			</li>
+			<li Class="CompProperties_Flickable" />
+		</comps>
+	</TurretBases.Defs.TurretBaseDef>
+
+	
+	<TurretBases.Defs.TurretBaseDef ParentName="TurretBase" Name="HeavyTurret_base">
+		<defName>Heavy_TurretBase</defName>
+		<label>Heavy turret base</label>
+		<description>Large heavy turret frame suitable for mounting a variety of larger weapons.</description>
+		<relatedTurretDef>Heavy_MountedTurret</relatedTurretDef>
+    	<size>(2,2)</size>
+		<graphicData>
+			<texPath>Things/Building/Security/TurretHeavy_Base</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(1.5, 1.5)</drawSize>
+			<drawOffset>(0,0,-0.1)</drawOffset>
+			<damageData>
+				<rect>(0.2,0.2,0.6,0.6)</rect>
+			</damageData>
+			<shadowData>
+				<volume>(1.5,0.35,1.4)</volume>
+				<offset>(0,0,-0.05)</offset>
+			</shadowData>
+		</graphicData>
+		<uiIconPath>Things/Building/Security/TurretHeavy_Base</uiIconPath>
+		<uiIconScale>1</uiIconScale>
+		<statBases>
+			<MaxHitPoints>380</MaxHitPoints>
+			<Flammability>0.7</Flammability>
+			<WorkToBuild>15000</WorkToBuild>
+			<Mass>100</Mass>
+			<Beauty>-20</Beauty>
+			<ShootingAccuracyTurret>0.96</ShootingAccuracyTurret>
+		</statBases>
+		<pathCost>50</pathCost>
+		<fillPercent>0.4</fillPercent>
+		<costList>
+			<Steel>350</Steel>
+			<Plasteel>40</Plasteel>
+			<ComponentIndustrial>6</ComponentIndustrial>
+		</costList>
+		<terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+		<constructionSkillPrerequisite>10</constructionSkillPrerequisite>
+		<researchPrerequisites>
+			<li>HeavyTurrets</li>
+		</researchPrerequisites>
+	</TurretBases.Defs.TurretBaseDef>
+
+	<TurretBases.Defs.TurretBaseDef ParentName="HeavyTurret_base">
+		<defName>Heavy_MountedTurret</defName>
+		<label>Heavy mounted turret</label>
+		<tickerType>Normal</tickerType>
+		<thingClass>TurretBases.Building.Building_MountedTurret</thingClass>
+		<thingCategories Inherit="false" />
+		<designationCategory Inherit="false" />
+		<minifiedDef />
+		<relatedTurretDef>Heavy_TurretBase</relatedTurretDef>
+		<building>
+			<ai_combatDangerous>true</ai_combatDangerous>
+			<relatedBuildCommands>
+				<li>Heavy_TurretBase</li>
 			</relatedBuildCommands>
 		</building>
 		<comps>
