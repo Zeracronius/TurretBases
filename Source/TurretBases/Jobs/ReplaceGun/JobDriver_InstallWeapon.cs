@@ -51,7 +51,7 @@ namespace TurretBases
 			finalize.initAction = delegate
 			{
 				pawn.carryTracker.DestroyCarriedThing();
-				Building_TurretBase turret = (Building_TurretBase)TargetThingA;
+				ICanInstallGun turret = (ICanInstallGun)TargetThingA;
 				turret?.InstallGun(TargetThingB);
 			};
 			finalize.defaultCompleteMode = ToilCompleteMode.Instant;

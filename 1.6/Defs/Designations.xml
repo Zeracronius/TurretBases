@@ -3,6 +3,6 @@
 		<defName>InstallWeapon</defName>
 		<texturePath>Designations/Flick</texturePath>
 		<targetType>Thing</targetType>
-		<designateCancelable>false</designateCancelable>
-	  </DesignationDef>
+		<designateCancelable>true</designateCancelable>
+	</DesignationDef>
 </Defs>

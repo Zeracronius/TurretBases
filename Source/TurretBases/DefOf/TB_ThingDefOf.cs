@@ -16,7 +16,5 @@ namespace TurretBases.DefOf
 			DefOfHelper.EnsureInitializedInCtor(typeof(TB_ThingDefOf));
 		}
 
-		public static ThingDef Turret_MountedTurret;
-		public static ThingDef Turret_Base;
 	}
 }

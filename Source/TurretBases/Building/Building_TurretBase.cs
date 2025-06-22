@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TurretBases.DefOf;
+using TurretBases.Defs;
 using TurretBases.Interfaces;
 using UnityEngine;
 using Verse;
@@ -12,20 +13,33 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace TurretBases.Building
 {
-    public class Building_TurretBase : Verse.Building
-    {
-		public Thing? GunToInstall;
+    public class Building_TurretBase : Verse.Building, ICanInstallGun
+	{
 		private Gizmo _selectWeapon;
+		private TurretBaseDef _turretBaseDef;
+		private Thing? _gunToInstall;
+
+		public Thing? GunToInstall
+		{
+			get => _gunToInstall;
+			set => _gunToInstall = value;
+		}
 
 		public Building_TurretBase()
 			: base()
         {
+		}
+
+		public override void PostMake()
+		{
+			base.PostMake();
+
 			_selectWeapon = new Command_Action()
 			{
 				action = OpenGunSelection,
-				defaultLabel = "Select gun"
+				defaultLabel = "Select weapon"
 			};
-
+			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef;
 		}
 
 		public void InstallGun(Thing gun)
@@ -36,7 +50,7 @@ namespace TurretBases.Building
 			Map map = Map;
 			this.DeSpawn();
 
-			Building_MountedTurret mountedTurret = (Building_MountedTurret)ThingMaker.MakeThing(TB_ThingDefOf.Turret_MountedTurret);
+			Building_MountedTurret mountedTurret = (Building_MountedTurret)ThingMaker.MakeThing(_turretBaseDef);
 			mountedTurret.SetGun(gun);
 			mountedTurret.SetFactionDirect(factionInt);
 			GenPlace.TryPlaceThing(mountedTurret, position, map, ThingPlaceMode.Direct);
@@ -60,7 +74,7 @@ namespace TurretBases.Building
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_References.Look(ref GunToInstall, "GunToInstall");
+			Scribe_References.Look(ref _gunToInstall, "GunToInstall");
 		}
 
 		public override IEnumerable<Gizmo> GetGizmos()

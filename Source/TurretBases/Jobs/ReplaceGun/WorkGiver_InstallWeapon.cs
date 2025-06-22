@@ -41,14 +41,14 @@ namespace TurretBases
 			if (pawn.CanReserve(t, 1, -1, null, forced) == false)
 				return false;
 
-			if (t is Building_TurretBase turretBase)
+			if (t is ICanInstallGun turretBase && t is Thing thing)
 			{
 				if (pawn.CanReserve(turretBase.GunToInstall, 1, 1, null, forced) == false ||
 					turretBase.GunToInstall.IsForbidden(pawn))
 				{
 					// Gun is no longer available. Cancel job.
-					turretBase.Map.designationManager.DesignationOn(turretBase, TB_DesignationDefOf.InstallWeapon)?.Delete();
-					Messages.Message("Install job cancelled as gun is no longer available.", turretBase, MessageTypeDefOf.TaskCompletion, historical: false);
+					thing.Map.designationManager.DesignationOn(thing, TB_DesignationDefOf.InstallWeapon)?.Delete();
+					Messages.Message("Install job cancelled as gun is no longer available.", thing, MessageTypeDefOf.TaskCompletion, historical: false);
 					return false;
 				}
 
@@ -63,7 +63,7 @@ namespace TurretBases
 
 		public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
 		{
-			Job job = JobMaker.MakeJob(TB_JobDefOf.InstallWeapon, t, ((Building_TurretBase)t).GunToInstall);
+			Job job = JobMaker.MakeJob(TB_JobDefOf.InstallWeapon, t, ((ICanInstallGun)t).GunToInstall);
 			job.count = 1;
 			return job;
 		}
