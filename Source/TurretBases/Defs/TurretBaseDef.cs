@@ -9,6 +9,6 @@ namespace TurretBases.Defs
 {
 	public class TurretBaseDef : ThingDef
 	{
-		public TurretBaseDef relatedTurretDef;
+		public TurretBaseDef? relatedTurretDef;
 	}
 }

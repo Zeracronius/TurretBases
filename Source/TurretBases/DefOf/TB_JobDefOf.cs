@@ -16,6 +16,6 @@ namespace TurretBases.DefOf
 			DefOfHelper.EnsureInitializedInCtor(typeof(TB_JobDefOf));
 		}
 
-		public static JobDef InstallWeapon;
+		public static JobDef? InstallWeapon;
 	}
 }

@@ -16,6 +16,6 @@ namespace TurretBases.DefOf
 			DefOfHelper.EnsureInitializedInCtor(typeof(TB_DesignationDefOf));
 		}
 
-		public static DesignationDef InstallWeapon;
+		public static DesignationDef? InstallWeapon;
 	}
 }

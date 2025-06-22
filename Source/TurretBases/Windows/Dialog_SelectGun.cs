@@ -16,7 +16,7 @@ namespace TurretBases.Interfaces
 	internal class Dialog_SelectGun : Window
 	{
 		Action<Thing?>? _callback;
-		Table<TableRow<Thing?>>? _table;
+		Table<TableRow<Thing>>? _table;
 		Map _map;
 
 		public Thing? SelectedGun;
