@@ -185,7 +185,13 @@ namespace TurretBases.Building
 
 		public override string GetInspectString()
 		{
-			return base.GetInspectString() + Environment.NewLine + gun.GetInspectString();
+			string description = base.GetInspectString();
+			string gunDescription = gun.GetInspectString();
+
+			if (String.IsNullOrWhiteSpace(gunDescription) == false)
+				description += Environment.NewLine + gunDescription;
+
+			return description;
 		}
 
 		public override void ExposeData()
