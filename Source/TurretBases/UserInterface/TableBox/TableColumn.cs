@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace TurretBases.UserInterface.TableBox
 {
-	internal delegate void RowCallback<Rect, T>(ref Rect boundingBox, T item);
+	public delegate void RowCallback<Rect, T>(ref Rect boundingBox, T item);
 
-	abstract class TableColumn
+	public abstract class TableColumn
 	{
 		/// <summary>
 		/// Gets the title of the column.
@@ -41,6 +41,8 @@ namespace TurretBases.UserInterface.TableBox
 		/// </value>
 		public bool IsFixedWidth { get; set; }
 
+		public bool Visible { get; set; }
+
 
 		public object? Tag { get; set; }
 
@@ -51,15 +53,32 @@ namespace TurretBases.UserInterface.TableBox
 			IsFixedWidth = true;
 			ShowHeader = true;
 			Tooltip = tooltip ?? caption;
+			InitialSortDirection = SortDirection.Ascending;
+			Visible = true;
 		}
 	}
 
 
 
-	internal class TableColumn<T> : TableColumn where T : ITableRow
+	public class TableColumn<T> : TableColumn where T : ITableRow
 	{
 		public RowCallback<Rect, T>? Callback;
 		public Table<T>.OrderByCallbackDelegate? OrderByCallback;
+
+		/// <summary>
+		/// Gets a value indicating whether this column supports sorting.
+		/// </summary>
+		public bool CanSort
+		{
+			get
+			{
+				// If column is based on callback, then ordering must be a callback too.
+				if (Callback != null && OrderByCallback == null)
+					return false;
+
+				return true;
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TableColumn{T}"/> class.

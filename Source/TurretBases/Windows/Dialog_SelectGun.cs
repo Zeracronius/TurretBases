@@ -18,13 +18,15 @@ namespace TurretBases.Interfaces
 		Action<Thing?>? _callback;
 		Table<TableRow<Thing>>? _table;
 		Map _map;
+		float _maxMass;
 
 		public Thing? SelectedGun;
 
-        public Dialog_SelectGun(Map map, Action<Thing?>? callback)
+        public Dialog_SelectGun(Map map, float maxMass, Action<Thing?>? callback)
         {
 			_map = map;
 			_callback = callback;
+			_maxMass = maxMass;
 		}
 
         public override void DoWindowContents(Rect inRect)
@@ -52,8 +54,12 @@ namespace TurretBases.Interfaces
 			_table = new Table<TableRow<Thing>>((row, value) => row.SearchString.Contains(value));
 			_table.MultiSelect = false;
 			_table.DrawBorder = true;
+			_table.AllowSorting = true;
 
 			TableColumn<TableRow<Thing>> colDef = _table.AddColumn("", 30f, DrawIcon);
+			colDef.IsFixedWidth = true;
+
+			TableColumn<TableRow<Thing>> colMass = _table.AddColumn("Mass", 60f);
 			colDef.IsFixedWidth = true;
 
 			TableColumn<TableRow<Thing>> colLabel = _table.AddColumn("Caption", 1f);
@@ -61,15 +67,44 @@ namespace TurretBases.Interfaces
 
 			foreach (var item in _map.listerThings.AllThings)
 			{
-				if (item.def.IsRangedWeapon && item.Spawned && (item as ThingWithComps)?.GetComp<CompForbiddable>()?.Forbidden != true)
+				if (item.def.IsRangedWeapon && item.Spawned)
 				{
 					var row = new TableRow<Thing>(item, item.Label.ToLower());
 					row[colLabel] = item.LabelCap;
 					row.Tag = item;
-					row.Tooltip = item.DescriptionDetailed;
+					
+					List<string> tooltips = new List<string>();
+
+					float gunMass = item.def.BaseMass;
+					row[colMass] = gunMass.ToStringMass();
+
+
+					// Is the gun forbidden?
+					if ((item as ThingWithComps)?.GetComp<CompForbiddable>()?.Forbidden == true)
+					{
+						row.Enabled = false;
+						tooltips.Insert(0, "Marked as  forbidden!".Colorize(Color.red));
+					}
+
+					// Is the gun too big?
+					if (gunMass > _maxMass)
+					{
+						row[colMass] = row[colMass].Colorize(Color.red);
+						row.Enabled = false;
+						tooltips.Insert(0, "Too heavy!".Colorize(Color.red));
+					}
+
+					if (row.Enabled == false)
+					{
+						row[colLabel] = row[colLabel].Colorize(Color.gray);
+					}
+
+					tooltips.Add(item.DescriptionDetailed);
+					row.Tooltip = tooltips.ToArray();
 					_table.AddRow(row);
 				}
 			}
+			_table.Sort(colMass, SortDirection.None, true);
 			_table.Refresh();
 		}
 

@@ -1,11 +1,13 @@
 ﻿namespace TurretBases.UserInterface.TableBox
 {
-	internal interface ITableRow
+	public interface ITableRow
 	{
 		/// <summary>
 		/// Shown when mouse is over the row.
 		/// </summary>
-		string? Tooltip { get; }
+		string[]? Tooltip { get; }
+
+		bool Enabled { get; }
 
 		bool HasColumn(TableColumn column);
 

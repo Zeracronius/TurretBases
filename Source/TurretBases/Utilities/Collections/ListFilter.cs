@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace TurretBases.Utilities.Collections
 {
-	internal class ListFilter<T>
+	public class ListFilter<T>
 	{
 		public delegate bool FilterCallbackDelegate(T item, string filterString);
 
@@ -232,7 +232,7 @@ namespace TurretBases.Utilities.Collections
 			{
 				rowSource = rowSource.Where(x => _filterCallback(x, _filterString ?? string.Empty));
 			}
-			
+
 			_bufferList.Clear();
 			_bufferList.AddRange(rowSource);
 			_filteredCollection = _bufferList.AsReadOnly();

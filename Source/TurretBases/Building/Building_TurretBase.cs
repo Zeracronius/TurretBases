@@ -60,7 +60,7 @@ namespace TurretBases.Building
 
 		private void OpenGunSelection()
 		{
-			Dialog_SelectGun dialog = new Dialog_SelectGun(Map, GunSelected);
+			Dialog_SelectGun dialog = new Dialog_SelectGun(Map, def.BaseMass, GunSelected);
 			Find.WindowStack.Add(dialog);
 		}
 

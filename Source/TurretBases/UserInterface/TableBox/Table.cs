@@ -9,11 +9,12 @@ using TurretBases.Utilities.Collections;
 
 namespace TurretBases.UserInterface.TableBox
 {
-	internal class Table<T> where T : ITableRow
+	public class Table<T> where T : ITableRow
 	{
-		internal delegate void OrderByCallbackDelegate(ListFilter<T> rows, SortDirection sortDirection, TableColumn tableColumn, bool reset);
+		public delegate void OrderByCallbackDelegate(ListFilter<T> rows, SortDirection sortDirection, TableColumn tableColumn, bool reset);
 
 		public event Action<TableColumn>? ColumnResized;
+		public event Action<Table<T>, TableColumn>? ColumnVisibilityChanged;
 
 		internal readonly string SEARCH_PLACEHOLDER = "DynamicTableControlSearchPlaceholder".Translate();
 		internal readonly float SEARCH_PLACEHOLDER_SIZE;
@@ -38,6 +39,15 @@ namespace TurretBases.UserInterface.TableBox
 		private bool _allowSorting;
 		private bool _canSelectRows;
 		private Dictionary<TableColumn<T>, SortDirection> _columnSortCache;
+
+		private bool _alternatingRowColors;
+
+		public bool AlternatingRowColors
+		{
+			get => _alternatingRowColors;
+			set => _alternatingRowColors = value;
+		}
+
 
 		private TableColumn<T>? _resizingColumn;
 
@@ -269,6 +279,8 @@ namespace TurretBases.UserInterface.TableBox
 			for (int i = 0; i < _columns.Count; i++)
 			{
 				TableColumn column = _columns[i];
+				if (column.Visible == false)
+					continue;
 
 				if (column.IsFixedWidth)
 					_fixedColumnWidth += column.Width;
@@ -320,7 +332,7 @@ namespace TurretBases.UserInterface.TableBox
 
 		public void Sort(TableColumn<T> column, SortDirection? direction = null, bool? reset = null)
 		{
-			if (column.Callback != null && column.OrderByCallback == null)
+			if (column.CanSort == false)
 				return;
 
 			SortDirection targetDirection;
@@ -360,18 +372,20 @@ namespace TurretBases.UserInterface.TableBox
 			{
 				case SortDirection.None:
 					_rows.ClearSorting(column);
+					if (reset == true)
+						_rows.OrderByDescending(x => x.Enabled, false);
 					break;
 
 				case SortDirection.Ascending:
 					if (column.OrderByCallback == null)
-						_rows.OrderBy(x => x[column], reset.Value);
+						_rows.OrderBy(x => x[column], reset.Value, column);
 					else
 						column.OrderByCallback(_rows, SortDirection.Ascending, column, reset.Value);
 					break;
 
 				case SortDirection.Descending:
 					if (column.OrderByCallback == null)
-						_rows.OrderByDescending(x => x[column], reset.Value);
+						_rows.OrderByDescending(x => x[column], reset.Value, column);
 					else
 						column.OrderByCallback(_rows, SortDirection.Descending, column, reset.Value);
 					break;
@@ -443,6 +457,9 @@ namespace TurretBases.UserInterface.TableBox
 				for (int i = 0; i < columnCount; i++)
 				{
 					TableColumn<T> column = _columns[i];
+					if (column.Visible == false)
+						continue;
+
 					bool fixedWidth = column.IsFixedWidth;
 					if (fixedWidth)
 					{
@@ -451,7 +468,7 @@ namespace TurretBases.UserInterface.TableBox
 					else
 						columnHeader.width = column.Width / _dynamicColumnWidth * leftoverWidth;
 
-					bool canOrder = _allowSorting && (column.Callback == null || column.OrderByCallback != null);
+					bool canOrder = _allowSorting && column.CanSort;
 					if (canOrder)
 						Widgets.DrawHighlightIfMouseover(columnHeader);
 
@@ -478,8 +495,16 @@ namespace TurretBases.UserInterface.TableBox
 						}
 					}
 
-					if (canOrder && Widgets.ButtonInvisible(columnHeader, true))
-						Sort(column);
+					if (Widgets.ButtonInvisible(columnHeader, true))
+					{
+						// If right-click then show context menu.
+						if (Event.current.button == 1)
+							ShowColumnContextMenu(column, canOrder);
+						else if (canOrder)
+							Sort(column);
+					}
+
+
 
 					// Add column resize widget.
 					if (_resizingColumn == null)
@@ -549,6 +574,9 @@ namespace TurretBases.UserInterface.TableBox
 					{
 						Text.Font = _lineFont;
 						TableColumn<T> column = _columns[i];
+						if (column.Visible == false)
+							continue;
+
 						if (column.IsFixedWidth)
 						{
 							rowRect.width = column.Width;
@@ -569,6 +597,9 @@ namespace TurretBases.UserInterface.TableBox
 					rowRect.x = 0;
 					rowRect.width = tableWidth;
 
+					if (_alternatingRowColors && currentIndex % 2 == 1)
+						Widgets.DrawLightHighlight(rowRect);
+
 					// Hightlight entire row if selected.
 					if (_canSelectRows && _selectedRows.Contains(currentRow))
 						Widgets.DrawHighlightSelected(rowRect);
@@ -576,14 +607,20 @@ namespace TurretBases.UserInterface.TableBox
 					// Hightlight row if moused over.
 					if (Mouse.IsOver(rowRect))
 					{
-						Widgets.DrawHighlight(rowRect);
-						string? tooltip = currentRow.Tooltip;
-						if (string.IsNullOrEmpty(tooltip) == false)
-							TooltipHandler.TipRegion(rowRect, tooltip);
-					}
-					Widgets.DrawHighlightIfMouseover(rowRect);
+						if (currentRow.Enabled)
+							Widgets.DrawHighlight(rowRect);
 
-					if (_canSelectRows)
+
+						if (currentRow.Tooltip != null)
+							for (int i = 0; i < currentRow.Tooltip.Length; i++)
+							{
+								string? tooltip = currentRow.Tooltip[i];
+								if (string.IsNullOrEmpty(tooltip) == false)
+									TooltipHandler.TipRegion(rowRect, tooltip);
+							}
+					}
+
+					if (_canSelectRows && currentRow.Enabled)
 					{
 						if (Widgets.ButtonInvisible(rowRect, false))
 						{
@@ -611,6 +648,70 @@ namespace TurretBases.UserInterface.TableBox
 			// Handle any potential event handlers when selection is modified.
 			if (selectionHasChanged && SelectionChanged != null)
 				SelectionChanged.Invoke(this, _selectedRows);
+		}
+
+		private void ShowColumnContextMenu(TableColumn<T> currentColumn, bool canOrder)
+		{
+			_columnSortCache.TryGetValue(currentColumn, out SortDirection currentSortDirection);
+
+			List<FloatMenuOption> options = new List<FloatMenuOption>();
+			if (canOrder)
+			{
+				options.Add(new FloatMenuOption("DynamicTradeWindowColumnContextSortByAscending".TranslateSimple(), () => Sort(currentColumn, SortDirection.Ascending))
+				{
+					orderInPriority = 4,
+					Priority = MenuOptionPriority.DisabledOption,
+					Disabled = currentSortDirection == SortDirection.Ascending,
+				});
+
+				options.Add(new FloatMenuOption("DynamicTradeWindowColumnContextSortByDescending".TranslateSimple(), () => Sort(currentColumn, SortDirection.Descending))
+				{
+					orderInPriority = 3,
+					Priority = MenuOptionPriority.DisabledOption,
+					Disabled = currentSortDirection == SortDirection.Descending,
+				});
+			}
+
+			if (currentSortDirection != SortDirection.None)
+			{
+				options.Add(new FloatMenuOption("DynamicTradeWindowColumnContextClearSorting".TranslateSimple(), () => Sort(currentColumn, SortDirection.None))
+				{
+					orderInPriority = 2,
+					Priority = MenuOptionPriority.DisabledOption,
+				});
+			}
+
+			options.Add(new FloatMenuOption("DynamicTradeWindowColumnContextHideColumn".TranslateSimple(), () => ToggleColumn(currentColumn, false))
+			{
+				orderInPriority = 1,
+				Priority = MenuOptionPriority.DisabledOption,
+			});
+
+			var hiddenColumns = _columns.Where(x => x.Visible == false).ToList();
+			if (hiddenColumns.Count > 0)
+			{
+				options.Add(new FloatMenuOption("DynamicTradeWindowColumnContextShowHiddenColumns".TranslateSimple(), () => { })
+				{
+					Disabled = true,
+					orderInPriority = 0,
+				});
+
+				int priority = -1;
+				foreach (var tableColumn in hiddenColumns)
+					options.Add(new FloatMenuOption(tableColumn.Caption, () => ToggleColumn(tableColumn, true))
+					{
+						orderInPriority = priority--,
+						Priority = MenuOptionPriority.DisabledOption,
+					});
+			}
+			Find.WindowStack.Add(new FloatMenu(options));
+		}
+
+		public void ToggleColumn(TableColumn column, bool setVisible)
+		{
+			column.Visible = setVisible;
+			InvalidateColumnWidths();
+			ColumnVisibilityChanged?.Invoke(this, column);
 		}
 	}
 }

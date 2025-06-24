@@ -19,7 +19,10 @@ namespace TurretBases.UserInterface.TableBox
 		public string SearchString;
 
 		/// <inheritdoc />
-		public string? Tooltip { get; set; }
+		public string[]? Tooltip { get; set; }
+
+		/// <inheritdoc />
+		public bool Enabled { get; set; }
 
 		public string this[TableColumn key]
 		{
@@ -38,6 +41,7 @@ namespace TurretBases.UserInterface.TableBox
 			_rowData = new Dictionary<TableColumn, string>();
 			SearchString = searchString?.ToLower() ?? string.Empty;
 			RowObject = rowObject;
+			Enabled = true;
 		}
 
 		public bool HasColumn(TableColumn column)
