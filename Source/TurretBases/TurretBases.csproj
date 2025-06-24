@@ -23,8 +23,5 @@
 		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4498-beta">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="Lib.Harmony" Version="2.3.6">
-			<ExcludeAssets>runtime</ExcludeAssets>
-		</PackageReference>
 	</ItemGroup>
 </Project>
