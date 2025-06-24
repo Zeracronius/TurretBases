@@ -187,5 +187,11 @@ namespace TurretBases.Building
 		{
 			return base.GetInspectString() + Environment.NewLine + gun.GetInspectString();
 		}
+
+		public override void ExposeData()
+		{
+			base.ExposeData();
+			Scribe_References.Look(ref _gunToInstall, "GunToInstall");
+		}
 	}
 }
