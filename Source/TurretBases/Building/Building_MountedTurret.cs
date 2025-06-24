@@ -35,9 +35,12 @@ namespace TurretBases.Building
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 		public override string Label => $"{base.Label}: {gun.LabelNoParenthesisCap}";
-		public override void PostMake()
+
+
+		public override void SpawnSetup(Map map, bool respawningAfterLoad)
 		{
-			base.PostMake();
+			base.SpawnSetup(map, respawningAfterLoad);
+
 			_removeWeapon = new Command_Action()
 			{
 				action = ConvertToPlatform,
