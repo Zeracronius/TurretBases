@@ -27,11 +27,14 @@ namespace TurretBases.Interfaces
 			_map = map;
 			_callback = callback;
 			_maxMass = maxMass;
+			this.resizeable = true;
+			this.draggable = true;
+			this.doCloseX = true;
 		}
 
         public override void DoWindowContents(Rect inRect)
 		{
-			inRect.SplitHorizontally(inRect.height - 70, out Rect top, out Rect bottom);
+			inRect.SplitHorizontally(inRect.height - 40, out Rect top, out Rect bottom);
 			_table?.Draw(top);
 
 			if (Widgets.ButtonText(bottom, "Select"))
