@@ -61,6 +61,12 @@ namespace TurretBases.Interfaces
 
 			TableColumn<TableRow<Thing>> colDef = _table.AddColumn("", 30f, DrawIcon);
 			colDef.IsFixedWidth = true;
+			colDef.OnClicked += (sender, e) =>
+			{
+				if (e.RowObject is Thing thing)
+					Find.WindowStack.Add(new Dialog_InfoCard(thing));
+			};
+
 
 			TableColumn<TableRow<Thing>> colMass = _table.AddColumn("Mass", 60f);
 			colDef.IsFixedWidth = true;
@@ -86,7 +92,7 @@ namespace TurretBases.Interfaces
 					if ((item as ThingWithComps)?.GetComp<CompForbiddable>()?.Forbidden == true)
 					{
 						row.Enabled = false;
-						tooltips.Insert(0, "Marked as  forbidden!".Colorize(Color.red));
+						tooltips.Insert(0, "Marked as forbidden!".Colorize(Color.red));
 					}
 
 					// Is the gun too big?

@@ -590,6 +590,11 @@ namespace TurretBases.UserInterface.TableBox
 						else
 							Widgets.Label(rowRect, currentRow[column]);
 
+						if (column.HasOnClickSubscribers)
+						{
+							if (Widgets.ButtonInvisible(rowRect, false))
+								column.Clicked(currentRow);
+						}
 
 						rowRect.x = rowRect.xMax + CELL_SPACING;
 					}

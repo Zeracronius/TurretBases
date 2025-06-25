@@ -16,6 +16,7 @@ namespace TurretBases.Building
 	{
 		private Gizmo _removeWeapon;
 		private Gizmo _selectWeapon;
+		private Gizmo _examineWeapon;
 		private TurretBaseDef _turretBaseDef;
 		private Graphic? _turretGraphics;
 		private Thing? _gunToInstall;
@@ -34,7 +35,8 @@ namespace TurretBases.Building
 		}
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-		public override string Label => $"{base.Label}: {gun.LabelNoParenthesisCap}";
+		public override string LabelNoCount => $"{base.LabelNoCount}: {gun.LabelNoParenthesisCap}";
+		public override string LabelNoParenthesis => $"{base.LabelNoParenthesis}: {gun.LabelNoParenthesisCap}";
 
 
 		public override void SpawnSetup(Map map, bool respawningAfterLoad)
@@ -52,6 +54,13 @@ namespace TurretBases.Building
 				action = OpenGunSelection,
 				defaultLabel = "Replace weapon"
 			};
+			_examineWeapon = new Command_Action()
+			{
+				action = () => Find.WindowStack.Add(new Dialog_InfoCard(gun)),
+				defaultLabel = gun.LabelCap,
+				icon = gun.def.uiIcon
+			};
+
 			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
 		}
 
@@ -179,6 +188,7 @@ namespace TurretBases.Building
 			}
 			yield return _selectWeapon;
 			yield return _removeWeapon;
+			yield return _examineWeapon;
 		}
 
 		/// <summary>

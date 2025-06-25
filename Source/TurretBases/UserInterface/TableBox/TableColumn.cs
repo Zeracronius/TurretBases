@@ -62,8 +62,25 @@ namespace TurretBases.UserInterface.TableBox
 
 	public class TableColumn<T> : TableColumn where T : ITableRow
 	{
+		public event EventHandler<T>? OnClicked;
+
 		public RowCallback<Rect, T>? Callback;
 		public Table<T>.OrderByCallbackDelegate? OrderByCallback;
+
+		/// <summary>
+		/// Returns true if anyone is subscribed to the <see cref="OnClicked"/> event.
+		/// </summary>
+		public bool HasOnClickSubscribers => OnClicked != null;
+
+		/// <summary>
+		/// Invokes the <see cref="OnClicked"/> event.
+		/// </summary>
+		/// <param name="row"></param>
+		public void Clicked(T row)
+		{
+			OnClicked?.Invoke(this, row);
+		}
+
 
 		/// <summary>
 		/// Gets a value indicating whether this column supports sorting.
