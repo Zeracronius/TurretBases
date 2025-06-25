@@ -17,5 +17,6 @@ namespace TurretBases.DefOf
 		}
 
 		public static DesignationDef? InstallWeapon;
+		public static DesignationDef? RemoveWeapon;
 	}
 }

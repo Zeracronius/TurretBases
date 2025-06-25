@@ -1,11 +1,21 @@
 <Defs>
 	<WorkGiverDef>
 		<defName>InstallWeapon</defName>
-		<label>Install guns</label>
+		<label>Install weapon</label>
 		<giverClass>TurretBases.WorkGiver_InstallWeapon</giverClass>
 		<workType>BasicWorker</workType>
 		<verb>Install weapon</verb>
-		<gerund>intalling weapon</gerund>
+		<gerund>Installing weapon</gerund>
+		<canBeDoneWhileDrafted>true</canBeDoneWhileDrafted>
+		<priorityInType>500</priorityInType>
+	  </WorkGiverDef>
+	<WorkGiverDef>
+		<defName>RemoveWeapon</defName>
+		<label>Uninstall weapon</label>
+		<giverClass>TurretBases.WorkGiver_RemoveWeapon</giverClass>
+		<workType>BasicWorker</workType>
+		<verb>Uninstall weapon</verb>
+		<gerund>Uninstalling weapon</gerund>
 		<canBeDoneWhileDrafted>true</canBeDoneWhileDrafted>
 		<priorityInType>500</priorityInType>
 	  </WorkGiverDef>

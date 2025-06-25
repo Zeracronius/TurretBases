@@ -43,8 +43,9 @@ namespace TurretBases.Building
 
 			_removeWeapon = new Command_Action()
 			{
-				action = ConvertToPlatform,
-				defaultLabel = "Eject weapon"
+				action = ScheduleUninstall,
+				defaultLabel = "Uninstall weapon",
+				
 			};
 			_selectWeapon = new Command_Action()
 			{
@@ -53,6 +54,14 @@ namespace TurretBases.Building
 			};
 			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
 		}
+
+		private void ScheduleUninstall()
+		{
+			// Add designation if not already assigned.
+			if (Map.designationManager.DesignationOn(this, TB_DesignationDefOf.RemoveWeapon) == null)
+				Map.designationManager.AddDesignation(new Designation(this, TB_DesignationDefOf.RemoveWeapon));
+		}
+
 
 		private void OpenGunSelection()
 		{
@@ -66,7 +75,7 @@ namespace TurretBases.Building
 			{
 				GunToInstall = selectedGun;
 				// Add designation if not already assigned.
-				if (Map.designationManager.HasMapDesignationOn(this) == false)
+				if (Map.designationManager.DesignationOn(this, TB_DesignationDefOf.InstallWeapon) == null)
 					Map.designationManager.AddDesignation(new Designation(this, TB_DesignationDefOf.InstallWeapon));
 			}
 		}
@@ -100,7 +109,7 @@ namespace TurretBases.Building
 		}
 		
 
-		private void ConvertToPlatform()
+		public void ConvertToPlatform()
 		{
 			IntVec3 position = Position;
 			Map map = Map;

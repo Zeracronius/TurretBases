@@ -17,5 +17,6 @@ namespace TurretBases.DefOf
 		}
 
 		public static JobDef? InstallWeapon;
+		public static JobDef? RemoveWeapon;
 	}
 }

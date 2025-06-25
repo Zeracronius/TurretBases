@@ -30,6 +30,9 @@ namespace TurretBases
 
 		public override bool ShouldSkip(Pawn pawn, bool forced = false)
 		{
+			if (pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation) == false)
+				return true;
+
 			return !pawn.Map.designationManager.AnySpawnedDesignationOfDef(TB_DesignationDefOf.InstallWeapon);
 		}
 

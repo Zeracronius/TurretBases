@@ -5,4 +5,10 @@
 		<targetType>Thing</targetType>
 		<designateCancelable>true</designateCancelable>
 	</DesignationDef>
+	<DesignationDef>
+		<defName>RemoveWeapon</defName>
+		<texturePath>Designations/Flick</texturePath>
+		<targetType>Thing</targetType>
+		<designateCancelable>true</designateCancelable>
+	</DesignationDef>
 </Defs>

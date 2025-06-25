@@ -2,7 +2,13 @@
 	<JobDef>
 		<defName>InstallWeapon</defName>
 		<driverClass>TurretBases.JobDriver_InstallWeapon</driverClass>
-		<reportString>Install gun.</reportString>
+		<reportString>Install weapon.</reportString>
 		<allowOpportunisticPrefix>false</allowOpportunisticPrefix>
 	  </JobDef>
+	<JobDef>
+		<defName>RemoveWeapon</defName>
+		<driverClass>TurretBases.JobDriver_RemoveWeapon</driverClass>
+		<reportString>Uninstall weapon.</reportString>
+		<allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+	</JobDef>
 </Defs>
