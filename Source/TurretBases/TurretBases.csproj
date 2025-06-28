@@ -4,7 +4,7 @@
 		<langVersion>11.0</langVersion>
 		<Nullable>enable</Nullable>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<Configurations>Debug;Hotswap;1.6</Configurations>
+		<Configurations>Debug;Hotswap;Release</Configurations>
 	</PropertyGroup>
 	<PropertyGroup>
 		<OutputPath>..\..\1.6\Assemblies\</OutputPath>
