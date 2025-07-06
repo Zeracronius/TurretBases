@@ -21,6 +21,7 @@ namespace TurretBases.Building
 		private Graphic? _turretGraphics;
 		private Thing? _gunToInstall;
 		private Verb_LaunchProjectile? _recoiledProjectile;
+		private float _burstCooldownFactor;
 
 		public Thing? GunToInstall
 		{
@@ -62,6 +63,10 @@ namespace TurretBases.Building
 			};
 
 			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
+			_burstCooldownFactor = ((TurretBaseDef)def).burstCooldownFactor!;
+			if (_burstCooldownFactor == 0)
+				_burstCooldownFactor = 1;
+
 		}
 
 		private void ScheduleUninstall()
@@ -106,6 +111,11 @@ namespace TurretBases.Building
 
 			var modExtension = gun.def.GetModExtension<ModExtensions.TurretBaseExtension>();
 			_turretGraphics = modExtension?.turretGraphicData?.Graphic;
+		}
+
+		protected override float BurstCooldownTime()
+		{
+			return AttackVerb.verbProps.defaultCooldownTime * _burstCooldownFactor;
 		}
 
 		private void OnBurstCompleted()

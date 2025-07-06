@@ -10,5 +10,6 @@ namespace TurretBases.Defs
 	public class TurretBaseDef : ThingDef
 	{
 		public TurretBaseDef? relatedTurretDef;
+		public float burstCooldownFactor = 1f;
 	}
 }
