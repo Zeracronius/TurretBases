@@ -14,6 +14,8 @@ namespace TurretBases.Building
 {
 	public class Building_MountedTurret : Building_TurretGun, ICanInstallGun
 	{
+		private const int SMOKE_COOLDOWN = 15;
+
 		private Gizmo _removeWeapon;
 		private Gizmo _selectWeapon;
 		private Gizmo _examineWeapon;
@@ -22,6 +24,10 @@ namespace TurretBases.Building
 		private Thing? _gunToInstall;
 		private Verb_LaunchProjectile? _recoiledProjectile;
 		private float _burstCooldownFactor;
+		private bool _tooDamaged;
+		private int _smokeTicks;
+		private float _partialDamage;
+		private bool _loadedTexture;
 
 		public Thing? GunToInstall
 		{
@@ -40,6 +46,27 @@ namespace TurretBases.Building
 		public override string LabelNoParenthesis => $"{base.LabelNoParenthesis}: {gun.LabelNoParenthesisCap}";
 
 
+		protected override void Tick()
+		{
+			if (_tooDamaged == false)
+				base.Tick();
+		}
+
+		protected override void TickInterval(int delta)
+		{
+			base.TickInterval(delta);
+
+			if (_tooDamaged && Spawned)
+			{
+				if (_smokeTicks < 0)
+				{
+					FleckMaker.ThrowSmoke(DrawPos, base.Map, 0.1f);
+					_smokeTicks = SMOKE_COOLDOWN;
+				}
+				_smokeTicks -= delta;
+			}
+		}
+
 		public override void SpawnSetup(Map map, bool respawningAfterLoad)
 		{
 			base.SpawnSetup(map, respawningAfterLoad);
@@ -47,13 +74,13 @@ namespace TurretBases.Building
 			_removeWeapon = new Command_Action()
 			{
 				action = ScheduleUninstall,
-				defaultLabel = "Uninstall weapon",
+				defaultLabel = "TurretBases_UninstallWeapon".TranslateSimple(),
 				
 			};
 			_selectWeapon = new Command_Action()
 			{
 				action = OpenGunSelection,
-				defaultLabel = "Replace weapon"
+				defaultLabel = "TurretBases_ReplaceWeapon".TranslateSimple(),
 			};
 			_examineWeapon = new Command_Action()
 			{
@@ -66,6 +93,11 @@ namespace TurretBases.Building
 			_burstCooldownFactor = ((TurretBaseDef)def).burstCooldownFactor!;
 			if (_burstCooldownFactor == 0)
 				_burstCooldownFactor = 1;
+
+			_smokeTicks = SMOKE_COOLDOWN;
+
+			if (gun != null)
+				SetGun(gun);
 
 		}
 
@@ -109,8 +141,8 @@ namespace TurretBases.Building
 				gun.DeSpawn();
 			gun.ForceSetStateToUnspawned();
 
-			var modExtension = gun.def.GetModExtension<ModExtensions.TurretBaseExtension>();
-			_turretGraphics = modExtension?.turretGraphicData?.Graphic;
+			if (Mod.TurretBasesMod.Settings.WeaponsCanBreak && _partialDamage > gun.HitPoints)
+				_tooDamaged = true;
 		}
 
 		protected override float BurstCooldownTime()
@@ -122,11 +154,31 @@ namespace TurretBases.Building
 		{
 			base.BurstComplete();
 
+			Mod.TurretBasesSettings settings = Mod.TurretBasesMod.Settings;
+
+			if (settings.WeaponsDegrade && _tooDamaged == false)
+			{
+				_partialDamage += (float)gun.MaxHitPoints / settings.ShotsToBreakWeapon;
+
+				if (_partialDamage > 1)
+				{
+					// If guns can break or damage is less than needed to break it.
+					int damage = (int)_partialDamage;
+					if (settings.WeaponsCanBreak || damage < gun.HitPoints)
+					{
+						gun.HitPoints -= damage;
+						if (gun.HitPoints < 1)
+							gun.Destroy();
+					}
+					else
+						_tooDamaged = true;
+				}
+			}
+
 			// When salvo is finished, check if attached weapon is dead, and convert to platform.
 			if (gun.Destroyed)
 				ConvertToPlatform();
 		}
-		
 
 		public void ConvertToPlatform()
 		{
@@ -134,7 +186,7 @@ namespace TurretBases.Building
 			Map map = Map;
 			DeSpawn();
 
-			Building_TurretBase turretBase = (Building_TurretBase)ThingMaker.MakeThing(_turretBaseDef);
+			Building_TurretBase turretBase = (Building_TurretBase)ThingMaker.MakeThing(_turretBaseDef, Stuff);
 			turretBase.SetFactionDirect(factionInt);
 			GenPlace.TryPlaceThing(turretBase, position, map, ThingPlaceMode.Direct);
 		}
@@ -159,6 +211,13 @@ namespace TurretBases.Building
 
 		protected override void DrawAt(Vector3 drawLoc, bool flip = false)
 		{
+			if (_loadedTexture == false)
+			{
+				var modExtension = gun.def.GetModExtension<ModExtensions.TurretBaseExtension>();
+				_turretGraphics = modExtension?.turretGraphicData?.Graphic;
+				_loadedTexture = true;
+			}
+
 			// Draw attached gun if any, and make sure to draw it above the turret.
 			float aimRotation = top.CurRotation - 90f;
 			if (_turretGraphics != null)
@@ -220,6 +279,9 @@ namespace TurretBases.Building
 			if (String.IsNullOrWhiteSpace(gunDescription) == false)
 				description += Environment.NewLine + gunDescription;
 
+			if (_tooDamaged)
+				description += Environment.NewLine + "CannotFire".TranslateSimple() + ": " + "TurretBases_TooDamaged".TranslateSimple();
+
 			return description;
 		}
 
@@ -227,6 +289,7 @@ namespace TurretBases.Building
 		{
 			base.ExposeData();
 			Scribe_References.Look(ref _gunToInstall, "GunToInstall");
+			Scribe_Values.Look(ref _partialDamage, "PartialDamage");
 		}
 	}
 }

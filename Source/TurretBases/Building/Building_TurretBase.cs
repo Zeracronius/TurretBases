@@ -39,7 +39,7 @@ namespace TurretBases.Building
 			_selectWeapon = new Command_Action()
 			{
 				action = OpenGunSelection,
-				defaultLabel = "Select weapon"
+				defaultLabel = "TurretBases_SelectWeapon".TranslateSimple()
 			};
 			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
 		}
@@ -52,7 +52,7 @@ namespace TurretBases.Building
 			Map map = Map;
 			this.DeSpawn();
 
-			Building_MountedTurret mountedTurret = (Building_MountedTurret)ThingMaker.MakeThing(_turretBaseDef);
+			Building_MountedTurret mountedTurret = (Building_MountedTurret)ThingMaker.MakeThing(_turretBaseDef, Stuff);
 			mountedTurret.SetGun(gun);
 			mountedTurret.SetFactionDirect(factionInt);
 			GenPlace.TryPlaceThing(mountedTurret, position, map, ThingPlaceMode.Direct);
