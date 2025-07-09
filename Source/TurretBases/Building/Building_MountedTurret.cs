@@ -75,18 +75,20 @@ namespace TurretBases.Building
 			{
 				action = ScheduleUninstall,
 				defaultLabel = "TurretBases_UninstallWeapon".TranslateSimple(),
-				
+				icon = gun.def.uiIcon
+
 			};
 			_selectWeapon = new Command_Action()
 			{
 				action = OpenGunSelection,
 				defaultLabel = "TurretBases_ReplaceWeapon".TranslateSimple(),
+				icon = gun.def.uiIcon
 			};
 			_examineWeapon = new Command_Action()
 			{
 				action = () => Find.WindowStack.Add(new Dialog_InfoCard(gun)),
 				defaultLabel = gun.LabelCap,
-				icon = gun.def.uiIcon
+				icon = gun.def.uiIcon,
 			};
 
 			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
@@ -169,6 +171,8 @@ namespace TurretBases.Building
 						gun.HitPoints -= damage;
 						if (gun.HitPoints < 1)
 							gun.Destroy();
+						else
+							((Command_Action)_examineWeapon).defaultLabel = gun.LabelCap;
 					}
 					else
 						_tooDamaged = true;

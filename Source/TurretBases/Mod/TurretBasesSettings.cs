@@ -17,13 +17,13 @@ namespace TurretBases.Mod
 
 		internal List<TreeNode_FilterBox> GetSettingsNodes()
 		{
-			var degradationNode = new TreeNode_FilterBox("Degredation", "Weapons degrades when shot by turret platform.",
+			var degradationNode = new TreeNode_FilterBox("TurretBases_SettingsDegredation".Translate(), "TurretBases_SettingsDegredationTooltip".Translate(),
 					(in Rect rect) => Widgets.Checkbox(rect.position, ref WeaponsDegrade));
 
-			degradationNode.AddChild("Weapon can break", "If enabled, mounted guns will keep shooting until they break, otherwise it will stop firing when too damaged.",
+			degradationNode.AddChild("TurretBases_SettingsCanBreak", "TurretBases_SettingsCanBreakTooltip",
 					(in Rect rect) => Widgets.Checkbox(rect.position, ref WeaponsCanBreak));
 
-			degradationNode.AddChild("Bursts to destroy", "Number of bursts a weapon will last before breaking.",
+			degradationNode.AddChild("TurretBases_SettingsBurstsToDestroy", "TurretBases_SettingsBurstsToDestroyTooltip",
 					(in Rect rect) => ShotsToBreakWeapon = (uint)Widgets.HorizontalSlider(rect, ShotsToBreakWeapon, 100f, 10000f, 
 						label: ShotsToBreakWeapon.ToString(), leftAlignedLabel: "100", rightAlignedLabel: "10000", roundTo: 1), splitRow: true);
 
@@ -37,6 +37,9 @@ namespace TurretBases.Mod
 
 		public override void ExposeData()
 		{
+			Scribe_Values.Look(ref WeaponsDegrade, nameof(WeaponsDegrade));
+			Scribe_Values.Look(ref WeaponsCanBreak, nameof(WeaponsCanBreak));
+			Scribe_Values.Look(ref ShotsToBreakWeapon, nameof(ShotsToBreakWeapon));
 			base.ExposeData();
 		}
 	}

@@ -4,4 +4,11 @@
 	<TurretBases_ReplaceWeapon>Replace weapon</TurretBases_ReplaceWeapon>
 	<TurretBases_TooDamaged>Weapon is too damaged.</TurretBases_TooDamaged>
 	<TurretBases_SelectWeapon>Select weapon</TurretBases_SelectWeapon>
+
+	<TurretBases_SettingsDegredation>Degredation</TurretBases_SettingsDegredation>
+	<TurretBases_SettingsDegredationTooltip>Weapons degrades when shot by turret platform.</TurretBases_SettingsDegredationTooltip>
+	<TurretBases_SettingsCanBreak>Weapon can break</TurretBases_SettingsCanBreak>
+	<TurretBases_SettingsCanBreakTooltip>If enabled, mounted guns will keep shooting until they break, otherwise it will stop firing when too damaged.</TurretBases_SettingsCanBreakTooltip>
+	<TurretBases_SettingsBurstsToDestroy>Bursts to destroy</TurretBases_SettingsBurstsToDestroy>
+	<TurretBases_SettingsBurstsToDestroyTooltip>Number of bursts a weapon will last before breaking.</TurretBases_SettingsBurstsToDestroyTooltip>
 </LanguageData>
