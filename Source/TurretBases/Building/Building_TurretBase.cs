@@ -36,12 +36,13 @@ namespace TurretBases.Building
 		public override void SpawnSetup(Map map, bool respawningAfterLoad)
 		{
 			base.SpawnSetup(map, respawningAfterLoad);
+			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
 			_selectWeapon = new Command_Action()
 			{
 				action = OpenGunSelection,
+				icon = _turretBaseDef.uiIcon,
 				defaultLabel = "TurretBases_SelectWeapon".TranslateSimple()
 			};
-			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
 		}
 
 		public void InstallGun(Thing gun)
