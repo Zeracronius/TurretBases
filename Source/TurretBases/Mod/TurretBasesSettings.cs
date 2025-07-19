@@ -14,6 +14,7 @@ namespace TurretBases.Mod
 		public bool WeaponsDegrade = true;
 		public bool WeaponsCanBreak = true;
 		public uint ShotsToBreakWeapon = 1000;
+		public bool AllowBiocodedWeapons = true;
 
 		internal List<TreeNode_FilterBox> GetSettingsNodes()
 		{
@@ -27,10 +28,13 @@ namespace TurretBases.Mod
 					(in Rect rect) => ShotsToBreakWeapon = (uint)Widgets.HorizontalSlider(rect, ShotsToBreakWeapon, 100f, 10000f, 
 						label: ShotsToBreakWeapon.ToString(), leftAlignedLabel: "100", rightAlignedLabel: "10000", roundTo: 1), splitRow: true);
 
+			var allowBiocodedNode = new TreeNode_FilterBox("TurretBases_SettingsAllowBiocoded".Translate(), "TurretBases_SettingsAllowBiocodedTooltip".Translate(),
+					(in Rect rect) => Widgets.Checkbox(rect.position, ref AllowBiocodedWeapons));
 
 			List<TreeNode_FilterBox> nodes = new List<TreeNode_FilterBox>
 			{
-				degradationNode
+				degradationNode,
+				allowBiocodedNode
 			};
 			return nodes;
 		}
@@ -40,6 +44,7 @@ namespace TurretBases.Mod
 			Scribe_Values.Look(ref WeaponsDegrade, nameof(WeaponsDegrade));
 			Scribe_Values.Look(ref WeaponsCanBreak, nameof(WeaponsCanBreak));
 			Scribe_Values.Look(ref ShotsToBreakWeapon, nameof(ShotsToBreakWeapon));
+			Scribe_Values.Look(ref AllowBiocodedWeapons, nameof(AllowBiocodedWeapons));
 			base.ExposeData();
 		}
 	}

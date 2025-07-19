@@ -95,6 +95,13 @@ namespace TurretBases.Interfaces
 						tooltips.Insert(0, "Marked as forbidden!".Colorize(Color.red));
 					}
 
+					// Is the gun biocoded?
+					if (Mod.TurretBasesMod.Settings.AllowBiocodedWeapons == false && item.TryGetComp<CompBiocodable>()?.Biocoded == true)
+					{
+						row.Enabled = false;
+						tooltips.Insert(0, "Biocoded!".Colorize(Color.red));
+					}
+
 					// Is the gun too big?
 					if (gunMass > _maxMass)
 					{

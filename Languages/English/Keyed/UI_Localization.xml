@@ -11,4 +11,7 @@
 	<TurretBases_SettingsCanBreakTooltip>If enabled, mounted guns will keep shooting until they break, otherwise it will stop firing when too damaged.</TurretBases_SettingsCanBreakTooltip>
 	<TurretBases_SettingsBurstsToDestroy>Bursts to destroy</TurretBases_SettingsBurstsToDestroy>
 	<TurretBases_SettingsBurstsToDestroyTooltip>Number of bursts a weapon will last before breaking.</TurretBases_SettingsBurstsToDestroyTooltip>
+
+	<TurretBases_SettingsAllowBiocoded>Allow biocoded weapons</TurretBases_SettingsAllowBiocoded>
+	<TurretBases_SettingsAllowBiocodedTooltip>Allow weapons that are biocoded to be mounted on turrets.</TurretBases_SettingsAllowBiocodedTooltip>
 </LanguageData>

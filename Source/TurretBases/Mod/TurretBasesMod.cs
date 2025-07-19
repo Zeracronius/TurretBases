@@ -26,7 +26,7 @@ namespace TurretBases.Mod
 
 		public override string SettingsCategory()
 		{
-			return "Turret bases";
+			return "Based Turrets";
 		}
 
 		public override void DoSettingsWindowContents(Rect inRect)
