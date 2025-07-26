@@ -142,8 +142,9 @@
 		</statBases>
 		<pathCost>50</pathCost>
 		<fillPercent>0.4</fillPercent>
+    	<costStuffCount>50</costStuffCount>
 		<costList>
-			<Steel>350</Steel>
+			<Steel>300</Steel>
 			<Plasteel>40</Plasteel>
 			<ComponentIndustrial>6</ComponentIndustrial>
 		</costList>
