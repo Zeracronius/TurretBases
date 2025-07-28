@@ -56,7 +56,7 @@ namespace TurretBases.Building
 			Building_MountedTurret mountedTurret = (Building_MountedTurret)ThingMaker.MakeThing(_turretBaseDef, Stuff);
 			mountedTurret.SetGun(gun);
 			mountedTurret.SetFactionDirect(factionInt);
-			GenPlace.TryPlaceThing(mountedTurret, position, map, ThingPlaceMode.Direct);
+			GenPlace.TryPlaceThing(mountedTurret, position, map, ThingPlaceMode.Direct, rot: Rotation);
 		}
 
 		private void OpenGunSelection()

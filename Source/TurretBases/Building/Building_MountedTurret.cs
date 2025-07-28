@@ -192,7 +192,7 @@ namespace TurretBases.Building
 
 			Building_TurretBase turretBase = (Building_TurretBase)ThingMaker.MakeThing(_turretBaseDef, Stuff);
 			turretBase.SetFactionDirect(factionInt);
-			GenPlace.TryPlaceThing(turretBase, position, map, ThingPlaceMode.Direct);
+			GenPlace.TryPlaceThing(turretBase, position, map, ThingPlaceMode.Direct, rot: Rotation);
 		}
 
 		
