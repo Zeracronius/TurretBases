@@ -24,6 +24,7 @@ namespace TurretBases.Building
 		private Thing? _gunToInstall;
 		private Verb_LaunchProjectile? _recoiledProjectile;
 		private float _burstCooldownFactor;
+		private float _cooldownTime = 0;
 		private bool _tooDamaged;
 		private int _smokeTicks;
 		private float _partialDamage;
@@ -139,6 +140,9 @@ namespace TurretBases.Building
 				verb.caster = this;
 				verb.castCompleteCallback = OnBurstCompleted;
 			}
+
+			_cooldownTime = AttackVerb.verbProps.AdjustedCooldown(AttackVerb, null) * _burstCooldownFactor;
+
 			if (gun.Spawned)
 				gun.DeSpawn();
 			gun.ForceSetStateToUnspawned();
@@ -149,7 +153,7 @@ namespace TurretBases.Building
 
 		protected override float BurstCooldownTime()
 		{
-			return AttackVerb.verbProps.defaultCooldownTime * _burstCooldownFactor;
+			return _cooldownTime;
 		}
 
 		private void OnBurstCompleted()
@@ -166,6 +170,7 @@ namespace TurretBases.Building
 				{
 					// If guns can break or damage is less than needed to break it.
 					int damage = (int)_partialDamage;
+					_partialDamage -= damage;
 					if (settings.WeaponsCanBreak || damage < gun.HitPoints)
 					{
 						gun.HitPoints -= damage;
@@ -282,6 +287,8 @@ namespace TurretBases.Building
 
 			if (String.IsNullOrWhiteSpace(gunDescription) == false)
 				description += Environment.NewLine + gunDescription;
+
+			description += Environment.NewLine + "Cooldown: " + _cooldownTime.ToString("F1") + " " + "SecondsLower".Translate();
 
 			if (_tooDamaged)
 				description += Environment.NewLine + "CannotFire".TranslateSimple() + ": " + "TurretBases_TooDamaged".TranslateSimple();
