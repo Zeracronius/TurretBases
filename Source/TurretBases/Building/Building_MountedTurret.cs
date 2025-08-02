@@ -71,37 +71,10 @@ namespace TurretBases.Building
 		public override void SpawnSetup(Map map, bool respawningAfterLoad)
 		{
 			base.SpawnSetup(map, respawningAfterLoad);
-
-			_removeWeapon = new Command_Action()
-			{
-				action = ScheduleUninstall,
-				defaultLabel = "TurretBases_UninstallWeapon".TranslateSimple(),
-				icon = gun.def.uiIcon
-
-			};
-			_selectWeapon = new Command_Action()
-			{
-				action = OpenGunSelection,
-				defaultLabel = "TurretBases_ReplaceWeapon".TranslateSimple(),
-				icon = gun.def.uiIcon
-			};
-			_examineWeapon = new Command_Action()
-			{
-				action = () => Find.WindowStack.Add(new Dialog_InfoCard(gun)),
-				defaultLabel = gun.LabelCap,
-				icon = gun.def.uiIcon,
-			};
-
-			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
-			_burstCooldownFactor = ((TurretBaseDef)def).burstCooldownFactor!;
-			if (_burstCooldownFactor == 0)
-				_burstCooldownFactor = 1;
-
-			_smokeTicks = SMOKE_COOLDOWN;
-
 			if (gun != null)
 				SetGun(gun);
-
+			else
+				ConvertToPlatform();
 		}
 
 		private void ScheduleUninstall()
@@ -141,11 +114,38 @@ namespace TurretBases.Building
 				verb.castCompleteCallback = OnBurstCompleted;
 			}
 
-			_cooldownTime = AttackVerb.verbProps.AdjustedCooldown(AttackVerb, null) * _burstCooldownFactor;
 
 			if (gun.Spawned)
 				gun.DeSpawn();
 			gun.ForceSetStateToUnspawned();
+
+			_removeWeapon = new Command_Action()
+			{
+				action = ScheduleUninstall,
+				defaultLabel = "TurretBases_UninstallWeapon".TranslateSimple(),
+				icon = gun.def.uiIcon
+
+			};
+			_selectWeapon = new Command_Action()
+			{
+				action = OpenGunSelection,
+				defaultLabel = "TurretBases_ReplaceWeapon".TranslateSimple(),
+				icon = gun.def.uiIcon
+			};
+			_examineWeapon = new Command_Action()
+			{
+				action = () => Find.WindowStack.Add(new Dialog_InfoCard(gun)),
+				defaultLabel = gun.LabelCap,
+				icon = gun.def.uiIcon,
+			};
+
+			_turretBaseDef = ((TurretBaseDef)def).relatedTurretDef!;
+			_burstCooldownFactor = ((TurretBaseDef)def).burstCooldownFactor!;
+			if (_burstCooldownFactor == 0)
+				_burstCooldownFactor = 1;
+
+			_cooldownTime = AttackVerb.verbProps.AdjustedCooldown(AttackVerb, null) * _burstCooldownFactor;
+			_smokeTicks = SMOKE_COOLDOWN;
 
 			if (Mod.TurretBasesMod.Settings.WeaponsCanBreak && _partialDamage > gun.HitPoints)
 				_tooDamaged = true;
